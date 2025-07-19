@@ -24,3 +24,23 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Custom styles inspired by the example design */
+.shadow-inset-custom {
+  box-shadow: inset 0px 1px 8px 4px rgba(0, 0, 0, 0.2);
+}
+
+.hover-teal-card:hover {
+  background-color: rgba(19, 146, 124, 0.05);
+  cursor: pointer;
+}
+
+/* Hide scrollbars like in the example */
+.scrollbar-hidden::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hidden {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

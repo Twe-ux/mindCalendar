@@ -1,6 +1,6 @@
-'use client'
+"use client";
 
-import React, { useCallback, useState, useRef, useEffect } from 'react'
+import React, { useCallback, useState, useRef, useEffect } from "react";
 import {
   ReactFlow,
   Node,
@@ -14,100 +14,103 @@ import {
   Background,
   NodeTypes,
   BackgroundVariant,
-} from '@xyflow/react'
-import '@xyflow/react/dist/style.css'
-import { useSession } from 'next-auth/react'
+} from "@xyflow/react";
+import "@xyflow/react/dist/style.css";
+import { useSession } from "next-auth/react";
 
-import MindMapNode from './MindMapNode'
-import { NodeData } from '@/lib/types'
-import { Plus, Loader2 } from 'lucide-react'
+import MindMapNode from "./MindMapNode";
+import { NodeData } from "@/lib/types";
+import { Plus, Loader2 } from "lucide-react";
 
 const nodeTypes: NodeTypes = {
   mindMapNode: MindMapNode,
-}
+};
 
 interface MindMapComponentProps {
-  tasks?: NodeData[]
-  onTaskUpdate?: (tasks: NodeData[]) => void
+  tasks?: NodeData[];
+  onTaskUpdate?: (tasks: NodeData[]) => void;
 }
 
-export default function MindMapComponent({ tasks = [], onTaskUpdate }: MindMapComponentProps) {
-  const { data: session } = useSession()
-  const [nodes, setNodes, onNodesChange] = useNodesState<Node[]>([])
-  const [edges, setEdges, onEdgesChange] = useEdgesState<Edge[]>([])
-  const [selectedNode, setSelectedNode] = useState<string | null>(null)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const reactFlowWrapper = useRef<HTMLDivElement>(null)
-  
+export default function MindMapComponent({
+  tasks = [],
+  onTaskUpdate,
+}: MindMapComponentProps) {
+  const { data: session } = useSession();
+  const [nodes, setNodes, onNodesChange] = useNodesState<Node[]>([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState<Edge[]>([]);
+  const [selectedNode, setSelectedNode] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const reactFlowWrapper = useRef<HTMLDivElement>(null);
+
   // Convertir les tâches en noeuds React Flow
   useEffect(() => {
     const flowNodes = tasks.map((task, index) => ({
       id: task.id,
-      type: 'mindMapNode',
-      position: { 
-        x: task.x || (250 + (index % 3) * 200), 
-        y: task.y || (100 + Math.floor(index / 3) * 150) 
+      type: "mindMapNode",
+      position: {
+        x: task.x || 250 + (index % 3) * 200,
+        y: task.y || 100 + Math.floor(index / 3) * 150,
       },
       data: task,
-    }))
-    
-    setNodes(flowNodes)
-    
+    }));
+
+    setNodes(flowNodes);
+
     // Créer des connexions simples pour l'exemple
     const flowEdges = tasks.slice(1).map((task, index) => ({
-      id: `e-${tasks[0]?.id || '1'}-${task.id}`,
-      source: tasks[0]?.id || '1',
+      id: `e-${tasks[0]?.id || "1"}-${task.id}`,
+      source: tasks[0]?.id || "1",
       target: task.id,
       animated: true,
-    }))
-    
-    setEdges(flowEdges)
-  }, [tasks, setNodes, setEdges])
+    }));
+
+    setEdges(flowEdges);
+  }, [tasks, setNodes, setEdges]);
 
   const onConnect = useCallback(
     (params: Connection) => setEdges((eds) => addEdge(params, eds)),
     [setEdges]
-  )
+  );
 
   const onNodeClick = useCallback((event: React.MouseEvent, node: Node) => {
-    setSelectedNode(node.id)
-  }, [])
+    setSelectedNode(node.id);
+  }, []);
 
   const addNewNode = useCallback(async () => {
     if (!session?.user?.email) {
-      setError('Vous devez être connecté pour créer une tâche')
-      return
+      setError("Vous devez être connecté pour créer une tâche");
+      return;
     }
-    
-    setLoading(true)
-    setError(null)
-    
+
+    setLoading(true);
+    setError(null);
+
     try {
       const newTaskData = {
-        title: 'Nouvelle idée',
-        description: 'Description de la nouvelle idée',
+        title: "Nouvelle idée",
+        description: "Description de la nouvelle idée",
         x: Math.random() * 500 + 100,
         y: Math.random() * 300 + 100,
-        color: '#8b5cf6',
-        priority: 'medium' as const,
-        tags: ['mindmap'],
+        color: "#8b5cf6",
+        priority: "medium" as const,
+        tags: ["mindmap"],
         isScheduled: false,
-        connections: []
-      }
-      
-      console.log('Création d\'une nouvelle tâche:', newTaskData)
-      
-      const response = await fetch('/api/mindmap', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newTaskData)
-      })
-      
+        connections: [],
+      };
+
+      console.log("Création d'une nouvelle tâche:", newTaskData);
+
+      const response = await fetch("/api/mindmap", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newTaskData),
+      });
+
       if (response.ok) {
-        const savedTask = await response.json()
-        console.log('Tâche créée avec succès:', savedTask)
-        
+        const savedTask = await response.json();
+        console.log("Tâche créée avec succès:", savedTask);
+
         const newTask: NodeData = {
           id: savedTask._id,
           title: savedTask.title,
@@ -117,26 +120,25 @@ export default function MindMapComponent({ tasks = [], onTaskUpdate }: MindMapCo
           tags: savedTask.tags || [],
           isScheduled: savedTask.isScheduled,
           x: savedTask.x,
-          y: savedTask.y
-        }
-        
+          y: savedTask.y,
+        };
+
         // Informer le composant parent de la mise à jour
         if (onTaskUpdate) {
-          onTaskUpdate([...tasks, newTask])
+          onTaskUpdate([...tasks, newTask]);
         }
-        
       } else {
-        const errorData = await response.json()
-        console.error('Erreur lors de la création:', errorData)
-        setError(`Erreur: ${errorData.error}`)
+        const errorData = await response.json();
+        console.error("Erreur lors de la création:", errorData);
+        setError(`Erreur: ${errorData.error}`);
       }
     } catch (err) {
-      console.error('Erreur réseau:', err)
-      setError('Erreur de connexion')
+      console.error("Erreur réseau:", err);
+      setError("Erreur de connexion");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }, [session, tasks, onTaskUpdate])
+  }, [session, tasks, onTaskUpdate]);
 
   return (
     <div className="w-full h-full relative">
@@ -151,9 +153,9 @@ export default function MindMapComponent({ tasks = [], onTaskUpdate }: MindMapCo
           ) : (
             <Plus size={16} />
           )}
-          {loading ? 'Création...' : 'Nouvelle idée'}
+          {loading ? "Création..." : "Nouvelle idée"}
         </button>
-        
+
         {error && (
           <div className="bg-red-100 border border-red-300 text-red-700 px-3 py-2 rounded-lg text-sm max-w-xs">
             {error}
@@ -180,17 +182,17 @@ export default function MindMapComponent({ tasks = [], onTaskUpdate }: MindMapCo
           attributionPosition="bottom-left"
         >
           <Controls />
-          <MiniMap 
+          <MiniMap
             nodeColor={(node) => {
-              const nodeData = node.data as NodeData
-              return nodeData.color || '#3b82f6'
+              const nodeData = node.data as NodeData;
+              return nodeData.color || "#3b82f6";
             }}
             className="bg-white border border-gray-300"
           />
-          <Background 
-            variant={BackgroundVariant.Dots} 
-            gap={20} 
-            size={1} 
+          <Background
+            variant={BackgroundVariant.Dots}
+            gap={20}
+            size={1}
             color="#e5e7eb"
           />
         </ReactFlow>
@@ -211,5 +213,5 @@ export default function MindMapComponent({ tasks = [], onTaskUpdate }: MindMapCo
         </div>
       )}
     </div>
-  )
+  );
 }
