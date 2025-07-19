@@ -1,0 +1,132 @@
+@import "style.css";
+
+:root {
+  --var-border-color: rgb(21, 169, 144);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  width: 100%;
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+}
+
+header {
+  position: sticky;
+  top: 0;
+  height: 50px;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  z-index: 1;
+  margin-left: 40px;
+  margin-right: 40px;
+}
+
+main {
+  flex: 1 1 0;
+  /* margin-left: 10px;
+  margin-right: 10px; */
+  padding: 4px;
+  /* background-color: rgb(39, 137, 121, 1); */
+  background-color: var(--var-border-color);
+  border: solid 0.5rem var(--var-border-color);
+  /* border-bottom: 0; */
+  border-radius: 16px 16px 16px 16px;
+  box-shadow: inset 0px 1px 8px 4px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+}
+
+.box-red {
+  /* background-color: white; */
+  border-radius: 5px 5px 5px 5px;
+  padding: 10px;
+  overflow-x: scroll;
+  flex: 2;
+}
+
+.box-blue {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 50%;
+  height: 100%;
+  background-color: white;
+  color: white;
+  border-radius: 10px 10px 10px 10px;
+}
+.bordeR {
+  border: 1px solid rgb(0, 21, 253);
+  border-radius: 10px;
+}
+
+.minW {
+  min-width: 366px;
+}
+
+.panel {
+  height: 100%;
+  color: white;
+
+  /* background-color: var(--var-border-color); */
+  /* box-shadow: inset 0px 1px 8px 4px rgba(0, 0, 0, 0.2); */
+  /* overflow: hidden; */
+}
+
+.search {
+  display: flex;
+  align-items: center;
+  padding-left: 10px;
+  height: 35px;
+  border-radius: 0 10px 10px 0;
+  width: 100%;
+  background-color: rgb(51, 200, 175, 1);
+}
+.icon {
+  display: flex;
+  align-items: center;
+  background-color: rgb(51, 200, 175, 1);
+
+  padding-left: 10px;
+  padding-right: 10px;
+  height: 35px;
+
+  border-radius: 10px 0 0 10px;
+  /* width: 100%; */
+}
+
+p {
+  font-size: 10px;
+}
+
+.resume p,
+.time p,
+.badge p {
+  font-size: 12px;
+}
+
+.users:hover {
+  cursor: pointer;
+  background-color: rgba(19, 146, 124, 0.584);
+}
+
+.test::-webkit-scrollbar {
+  display: none;
+}
+
+.object {
+  font-size: 12px;
+  font-weight: 700;
+}
